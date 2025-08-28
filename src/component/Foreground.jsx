@@ -1,40 +1,60 @@
-import { useRef } from 'react';
-import Card from './Card';
+import React, { useRef, useState } from "react";
+import Card from "./Card";
 
-function Foreground() {
+const Foreground = () => {
+  const ref = useRef(null);
 
-  const ref=useRef(null);
+  // initial cards (optional)
+  const [cards, setCards] = useState([
+    { id: 1, desc: "Click to add text..." },
+    { id: 2, desc: "Click to add text..." },
+  ]);
 
-  const data = [
-    {
-      desc: "This is the card that displays some details.",
-      filesize: ".9mb",
-      close: true,
-      tag: { isOpen: true, tagTitle: "Download Now", tagColor: "green" },
-    },
-    {
-      desc: "This is the card that displays some details.",
-      filesize: ".9mb",
-      close: true,
-      tag: { isOpen: true, tagTitle: "Download Now", tagColor: "blue" },
-    },
-    {
-      desc: "This is the card that displays some details.",
-      filesize: ".9mb",
-      close: true,
-      tag: { isOpen: false, tagTitle: "Upload", tagColor: "green" },
-    },
-  ];
-  //DONE TILL HERE
-  
+  // ADD
+  const addCard = () => {
+    setCards((prev) => [
+      ...prev,
+      { id: Date.now(), desc: "Click to add text..." },
+    ]);
+  };
+
+  // DELETE
+  const deleteCard = (id) => {
+    setCards((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  // UPDATE
+  const updateCard = (id, newDesc) => {
+    setCards((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, desc: newDesc } : c))
+    );
+  };
 
   return (
-    <div ref={ref} className="fixed top-0 left-0 z-[3] w-full h-full flex gap-10 flex-wrap p-5">
-      {data.map((item, index) => (
-        <Card key={index} data={item} reference={ref} />
+    <div
+      ref={ref}
+      className="fixed top-0 left-0 z-[3] w-full h-full flex flex-wrap gap-4 p-5 overflow-hidden"
+    >
+      {cards.map((card) => (
+        <Card
+          key={card.id}
+          data={card}
+          reference={ref}
+          onDelete={deleteCard}
+          onUpdate={updateCard}
+        />
       ))}
+
+      {/* Fixed Add Button (always inside viewport, never draggable) */}
+      <button
+        type="button"
+        onClick={addCard}
+        className="fixed bottom-6 right-6 z-[50] bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-2xl shadow-lg font-semibold"
+      >
+        + Add Card
+      </button>
     </div>
   );
-}
+};
 
 export default Foreground;

@@ -1,29 +1,67 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
 import { FaRegFileAlt } from "react-icons/fa";
-import {LuDownload} from "react-icons/lu"
-import {IoClose} from "react-icons/io5"
-import { motion } from "motion/react"
+import { IoClose } from "react-icons/io5";
+import { motion } from "framer-motion";
 
-const Card = ({data, reference}) => {
+const Card = ({ data, reference, onDelete, onUpdate }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [text, setText] = useState(data.desc || "");
+
+  // keep local text in sync if parent updates it
+  useEffect(() => {
+    setText(data.desc || "");
+  }, [data.desc]);
+
+  const handleBlur = () => {
+    setIsEditing(false);
+    onUpdate(data.id, text);
+  };
+
   return (
-    <motion.div drag dragConstraints={reference} whileDrag={{scale:1.1}} dragElastic={.1} dragTransition={{bounceStiffness:500, bounceDamping:10}} className='relative flex-shrink-0 w-60 h-72 rounded-[45px] bg-zinc-900/90 text-white px-8 py-10 overflow-hidden'>
-      <FaRegFileAlt />
-      <p className='text-sm leading-tight mt-5 font-semibold '>{data.desc}</p>
-      <div className='footer absolute bottom-0 w-full left-0'>
-        <div className='flex items-center justify-between px-8 py-3 mb-3'>
-          <h5>{data.filesize}</h5>
-          <span className='w-7 h-7 bg-zinc-600 rounded-full flex items-center justify-center'>
-            {data.close ? <IoClose /> : <LuDownload size=".7em" color='#fff'/> }
-          </span>
-        </div>
-        {data.tag.isOpen && (
-          <div className={`tag w-full py-4 ${data.tag.tagColor === "blue" ? "bg-blue-600" : "bg-green-600"} flex items-center justify-center`}>
-            <h3 className='text-sm font-semibold'>{data.tag.tagTitle}</h3>
-          </div>
-          )}
+    <motion.div
+      drag
+      dragConstraints={reference}
+      whileDrag={{ scale: 1.05 }}
+      dragElastic={0.1}
+      dragTransition={{ bounceStiffness: 500, bounceDamping: 10 }}
+      className="relative flex-shrink-0 w-60 h-72 rounded-[30px] bg-zinc-900/90 text-white px-6 py-6 shadow-lg flex flex-col"
+    >
+      {/* Header row */}
+      <div className="flex justify-between items-center">
+        <FaRegFileAlt />
+        <button
+          type="button"
+          onClick={() => onDelete(data.id)}
+          className="text-red-400 hover:text-red-600"
+          aria-label="Delete card"
+          title="Delete"
+        >
+          <IoClose />
+        </button>
+      </div>
+
+      {/* Editable content */}
+      <div className="mt-3 flex-1">
+        {isEditing ? (
+          <textarea
+            autoFocus
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onBlur={handleBlur}
+            className="w-full h-full bg-transparent outline-none resize-none text-sm font-semibold text-white whitespace-pre-wrap break-words"
+          />
+        ) : (
+          <p
+            className="text-sm font-semibold whitespace-pre-wrap break-words cursor-text"
+            onClick={() => setIsEditing(true)}
+            title="Click to edit"
+          >
+            {text || "Click to add text..."}
+          </p>
+        )}
       </div>
     </motion.div>
-  )
-}
+  );
+};
 
-export default Card
+export default Card;
