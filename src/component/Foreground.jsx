@@ -45,7 +45,6 @@ const Foreground = () => {
         />
       ))}
 
-      {/* Fixed Add Button (always inside viewport, never draggable) */}
       <button
         type="button"
         onClick={addCard}

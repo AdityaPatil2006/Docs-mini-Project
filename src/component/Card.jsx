@@ -7,7 +7,6 @@ const Card = ({ data, reference, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(data.desc || "");
 
-  // keep local text in sync if parent updates it
   useEffect(() => {
     setText(data.desc || "");
   }, [data.desc]);
